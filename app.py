@@ -284,16 +284,8 @@ def run_full_scan():
     regime = hmm_regime(nc) if len(nc)>=120 else 'unknown'
     SCAN_LOG.append(f"Regime: {regime}")
 
-    if regime == 'bear':
-        SCAN_LOG.append("Bear regime — no signals")
-        with lock:
-            SCAN_RESULTS['scan_metadata'].update({
-                'timestamp': datetime.now(IST).strftime('%Y-%m-%d %H:%M'),
-                'market_regime': 'bear', 'stocks_scanned': 0,
-                'buy_signals_count': 0, 'scan_duration_seconds': (datetime.now()-t0).seconds
-            })
-            save_scan()
-        return
+    # In bear regime — only generate SELL signals for FnO stocks, A/A+ grade
+bear_mode = (regime == 'bear')
 
     buys = []; failed = 0; scanned = 0
     SCAN_LOG.append(f"Scanning {len(FNO_STOCKS)} stocks...")
