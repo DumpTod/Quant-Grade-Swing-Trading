@@ -504,7 +504,7 @@ def api_token_auth_url():
     redirect = "https://trade.fyers.in/api-login/redirect-uri/index.html"
     if not app_id:
         return jsonify({"error": "FYERS_APP_ID not set in Render environment"}), 400
-    url = (f"https://api.fyers.in/api/v2/generate-authcode"
+    url = (f"https://api-t1.fyers.in/api/v3/generate-authcode"
            f"?client_id={app_id}&redirect_uri={requests.utils.quote(redirect)}&response_type=code&state=render_login")
     return jsonify({"auth_url": url, "redirect_uri": redirect})
 
@@ -520,7 +520,7 @@ def api_token_exchange():
             return jsonify({"error": "FYERS_APP_ID or FYERS_SECRET_KEY not set"}), 400
         import hashlib
         app_hash = hashlib.sha256(f"{app_id}:{secret}".encode()).hexdigest()
-        res    = requests.post("https://api.fyers.in/api/v2/validate-authcode", json={"grant_type":"authorization_code","appIdHash":app_hash,"code":auth_code}, timeout=15)
+        res    = requests.post("https://api-t1.fyers.in/api/v3/validate-authcode", json={"grant_type":"authorization_code","appIdHash":app_hash,"code":auth_code}, timeout=15)
         result = res.json()
         if result.get("s") != "ok":
             return jsonify({"error": result.get("message","Token exchange failed")}), 400
